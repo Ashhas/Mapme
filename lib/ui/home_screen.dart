@@ -52,36 +52,74 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
           Positioned(
-            left: 15,
-            right: 15,
-            bottom: MediaQuery.of(context).size.height * 0.03,
-            child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(25), color: Colors.white),
-              height: 55,
-              width: MediaQuery.of(context).size.width * 0.92,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              left: 15,
+              right: 15,
+              bottom: MediaQuery.of(context).size.height * 0.03,
+              child: Column(
                 children: [
-                  IconButton(
-                    onPressed: null,
-                    icon: Icon(
-                      Icons.directions_walk,
-                      color: Colors.black,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ElevatedButton(
+                        onPressed: null,
+                        child: Icon(
+                          Icons.history,
+                          color: Colors.black,
+                        ),
+                        style: ButtonStyle(
+                          shape: MaterialStateProperty.all(CircleBorder()),
+                          backgroundColor:
+                              MaterialStateProperty.all(Colors.white),
+                          padding:
+                              MaterialStateProperty.all(EdgeInsets.all(15)),
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: null,
+                        child: Icon(
+                          Icons.gps_fixed,
+                          color: Colors.black,
+                        ),
+                        style: ButtonStyle(
+                          shape: MaterialStateProperty.all(CircleBorder()),
+                          backgroundColor:
+                              MaterialStateProperty.all(Colors.white),
+                          padding:
+                              MaterialStateProperty.all(EdgeInsets.all(15)),
+                        ),
+                      )
+                    ],
                   ),
-                  Text("Start tracking!"),
-                  IconButton(
-                    onPressed: null,
-                    icon: Icon(
-                      Icons.play_circle_fill,
-                      color: Colors.black,
+                  SizedBox(height: 20),
+                  Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(25),
+                        color: Colors.white),
+                    height: 55,
+                    width: MediaQuery.of(context).size.width * 0.92,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton(
+                          onPressed: null,
+                          icon: Icon(
+                            Icons.directions_walk,
+                            color: Colors.black,
+                          ),
+                        ),
+                        Text("Start tracking!"),
+                        IconButton(
+                          onPressed: null,
+                          icon: Icon(
+                            Icons.play_circle_fill,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
-              ),
-            ),
-          )
+              ))
         ],
       )),
     );
