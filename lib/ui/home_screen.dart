@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -12,17 +13,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Completer<GoogleMapController> _controller = Completer();
-  String _mapStyle = '';
-
-  static final CameraPosition _kInitialLocation = CameraPosition(
-    target: LatLng(52.29435148497498, 4.960703197502028),
-    zoom: 14.4746,
-  );
-
-  static final CameraPosition _kSchool = CameraPosition(
-      bearing: 192.8334901395799,
-      target: LatLng(52.35589235898195, 4.955131805759462),
-      zoom: 15);
+  LatLng _initialCameraPosition = LatLng(20.5937, 78.9629);
+  String? _mapStyle;
 
   @override
   void initState() {
@@ -32,26 +24,54 @@ class _HomeScreenState extends State<HomeScreen> {
         _mapStyle = string;
       });
     });
+
+    _checkPermissionAndService();
+  }
+
+  Future<void> _onMapCreated(GoogleMapController controller) async {
+    controller.setMapStyle(_mapStyle);
+
+    // Geolocator.getPositionStream().listen((Position position) {
+    //   controller.animateCamera(
+    //     CameraUpdate.newCameraPosition(
+    //       CameraPosition(
+    //           target: LatLng(position.latitude, position.longitude),
+    //           zoom: 17.5),
+    //     ),
+    //   );
+    // });
+
+    //Get current geo-position
+    var _currentLocation = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+
+    controller.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+            target:
+                LatLng(_currentLocation.latitude, _currentLocation.longitude),
+            zoom: 17.5),
+      ),
+    );
+
+    _controller.complete(controller);
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-          body: Stack(
-        children: [
-          GoogleMap(
-            mapType: MapType.normal,
-            initialCameraPosition: _kInitialLocation,
-            buildingsEnabled: true,
-            zoomGesturesEnabled: true,
-            zoomControlsEnabled: false,
-            onMapCreated: (GoogleMapController controller) {
-              controller.setMapStyle(_mapStyle);
-              _controller.complete(controller);
-            },
-          ),
-          Positioned(
+        body: Stack(
+          children: [
+            GoogleMap(
+                mapType: MapType.normal,
+                initialCameraPosition:
+                    CameraPosition(target: _initialCameraPosition),
+                zoomControlsEnabled: false,
+                myLocationButtonEnabled: false,
+                myLocationEnabled: true,
+                onMapCreated: _onMapCreated),
+            Positioned(
               left: 15,
               right: 15,
               bottom: MediaQuery.of(context).size.height * 0.03,
@@ -75,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       ElevatedButton(
-                        onPressed: null,
+                        onPressed: _resetToCurrentPosition,
                         child: Icon(
                           Icons.gps_fixed,
                           color: Colors.black,
@@ -119,14 +139,53 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ],
-              ))
-        ],
-      )),
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 
-  Future<void> _goToTheLake() async {
+  _checkPermissionAndService() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error("Location services are disabled.");
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          "Location permissions are permantly denied. we cannot request permissions.");
+    } else if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission != LocationPermission.whileInUse &&
+          permission != LocationPermission.always) {
+        return Future.error(
+            "Location permissions are denied (actual value: $permission).");
+      }
+    }
+  }
+
+  Future<void> _resetToCurrentPosition() async {
     final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_kSchool));
+
+    //Get current geo-position
+    var _currentLocation = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+
+    print(_currentLocation);
+
+    //Create new camera position for maps
+    final CameraPosition _newCameraPosition = CameraPosition(
+        target: LatLng(_currentLocation.latitude, _currentLocation.longitude),
+        zoom: 17.5);
+
+    //Set New Camera Position in maps
+    controller
+        .animateCamera(CameraUpdate.newCameraPosition(_newCameraPosition));
   }
 }
