@@ -120,12 +120,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     width: MediaQuery.of(context).size.width * 0.92,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         IconButton(
                           onPressed: null,
                           icon: Icon(
                             Icons.directions_walk,
                             color: Colors.black,
+                            size: 20,
                           ),
                         ),
                         Text("Start tracking!"),
@@ -134,6 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           icon: Icon(
                             Icons.play_circle_fill,
                             color: Colors.black,
+                            size: 35,
                           ),
                         ),
                       ],
