@@ -74,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Positioned(
               left: 15,
               right: 15,
-              bottom: MediaQuery.of(context).size.height * 0.03,
+              bottom: MediaQuery.of(context).size.height * 0.04,
               child: Column(
                 children: [
                   Row(
@@ -85,6 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Icon(
                           Icons.history,
                           color: Colors.black,
+                          size: 25,
                         ),
                         style: ButtonStyle(
                           shape: MaterialStateProperty.all(CircleBorder()),
@@ -113,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   SizedBox(height: 20),
                   Container(
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(25),
+                        borderRadius: BorderRadius.circular(30),
                         color: Colors.white),
                     height: 55,
                     width: MediaQuery.of(context).size.width * 0.92,
