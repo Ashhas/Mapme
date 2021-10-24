@@ -108,42 +108,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  ElevatedButton(
-                                    onPressed: null,
-                                    child: Icon(
-                                      Icons.history,
-                                      color: Colors.black,
-                                      size: 25,
-                                    ),
-                                    style: ButtonStyle(
-                                      shape: MaterialStateProperty.all(
-                                          CircleBorder()),
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.white),
-                                      padding: MaterialStateProperty.all(
-                                          EdgeInsets.all(15)),
-                                    ),
-                                  ),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      _setMapCameraCurrentPosition(
-                                          googleMapController);
-                                    },
-                                    child: Icon(
-                                      Icons.gps_fixed,
-                                      color: Colors.black,
-                                    ),
-                                    style: ButtonStyle(
-                                      shape: MaterialStateProperty.all(
-                                          CircleBorder()),
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.white),
-                                      padding: MaterialStateProperty.all(
-                                          EdgeInsets.all(15)),
-                                    ),
-                                  )
+                                  _historyButton(),
+                                  _currentPositionButton(),
                                 ],
                               ),
                               SizedBox(height: 20),
@@ -159,6 +125,39 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           },
         ),
+      ),
+    );
+  }
+
+  Widget _historyButton() {
+    return ElevatedButton(
+      onPressed: null,
+      child: Icon(
+        Icons.history,
+        color: Colors.black,
+        size: 25,
+      ),
+      style: ButtonStyle(
+        shape: MaterialStateProperty.all(CircleBorder()),
+        backgroundColor: MaterialStateProperty.all(Colors.white),
+        padding: MaterialStateProperty.all(EdgeInsets.all(15)),
+      ),
+    );
+  }
+
+  Widget _currentPositionButton() {
+    return ElevatedButton(
+      onPressed: () {
+        _setMapCameraCurrentPosition(googleMapController);
+      },
+      child: Icon(
+        Icons.gps_fixed,
+        color: Colors.black,
+      ),
+      style: ButtonStyle(
+        shape: MaterialStateProperty.all(CircleBorder()),
+        backgroundColor: MaterialStateProperty.all(Colors.white),
+        padding: MaterialStateProperty.all(EdgeInsets.all(15)),
       ),
     );
   }
