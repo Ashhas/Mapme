@@ -1,10 +1,13 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:map_me/bloc/tracking_footer/tracking_footer_bloc.dart';
+import 'package:map_me/ui/widgets/TrackingFooterCard.dart';
+import 'package:map_me/ui/widgets/TrackingFooterRow.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -12,143 +15,24 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Completer<GoogleMapController> _controller = Completer();
+  late GoogleMapController googleMapController;
+  late StreamSubscription<Position> positionStream;
   LatLng _initialCameraPosition = LatLng(20.5937, 78.9629);
   String? _mapStyle;
 
   @override
   void initState() {
     super.initState();
+    _getMapStyle();
+    _checkPermissionAndService();
+  }
+
+  _getMapStyle() {
     SchedulerBinding.instance?.addPostFrameCallback((_) {
       rootBundle.loadString("assets/style/map_style.txt").then((string) {
         _mapStyle = string;
       });
     });
-
-    _checkPermissionAndService();
-  }
-
-  Future<void> _onMapCreated(GoogleMapController controller) async {
-    controller.setMapStyle(_mapStyle);
-
-    // Geolocator.getPositionStream().listen((Position position) {
-    //   controller.animateCamera(
-    //     CameraUpdate.newCameraPosition(
-    //       CameraPosition(
-    //           target: LatLng(position.latitude, position.longitude),
-    //           zoom: 17.5),
-    //     ),
-    //   );
-    // });
-
-    //Get current geo-position
-    var _currentLocation = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-
-    controller.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(
-            target:
-                LatLng(_currentLocation.latitude, _currentLocation.longitude),
-            zoom: 17.5),
-      ),
-    );
-
-    _controller.complete(controller);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: Stack(
-          children: [
-            GoogleMap(
-                mapType: MapType.normal,
-                initialCameraPosition:
-                    CameraPosition(target: _initialCameraPosition),
-                zoomControlsEnabled: false,
-                myLocationButtonEnabled: false,
-                myLocationEnabled: true,
-                onMapCreated: _onMapCreated),
-            Positioned(
-              left: 15,
-              right: 15,
-              bottom: MediaQuery.of(context).size.height * 0.04,
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      ElevatedButton(
-                        onPressed: null,
-                        child: Icon(
-                          Icons.history,
-                          color: Colors.black,
-                          size: 25,
-                        ),
-                        style: ButtonStyle(
-                          shape: MaterialStateProperty.all(CircleBorder()),
-                          backgroundColor:
-                              MaterialStateProperty.all(Colors.white),
-                          padding:
-                              MaterialStateProperty.all(EdgeInsets.all(15)),
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: _resetToCurrentPosition,
-                        child: Icon(
-                          Icons.gps_fixed,
-                          color: Colors.black,
-                        ),
-                        style: ButtonStyle(
-                          shape: MaterialStateProperty.all(CircleBorder()),
-                          backgroundColor:
-                              MaterialStateProperty.all(Colors.white),
-                          padding:
-                              MaterialStateProperty.all(EdgeInsets.all(15)),
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(height: 20),
-                  Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                        color: Colors.white),
-                    height: 55,
-                    width: MediaQuery.of(context).size.width * 0.92,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          onPressed: null,
-                          icon: Icon(
-                            Icons.directions_walk,
-                            color: Colors.black,
-                            size: 20,
-                          ),
-                        ),
-                        Text("Start tracking!"),
-                        IconButton(
-                          onPressed: null,
-                          icon: Icon(
-                            Icons.play_circle_fill,
-                            color: Colors.black,
-                            size: 35,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            )
-          ],
-        ),
-      ),
-    );
   }
 
   _checkPermissionAndService() async {
@@ -174,18 +58,126 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _resetToCurrentPosition() async {
-    final GoogleMapController controller = await _controller.future;
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        body: BlocBuilder<TrackingFooterBloc, TrackingFooterState>(
+          builder: (BuildContext context, state) {
+            return Stack(
+              children: [
+                GoogleMap(
+                  mapType: MapType.normal,
+                  initialCameraPosition:
+                      CameraPosition(target: _initialCameraPosition),
+                  zoomControlsEnabled: false,
+                  myLocationButtonEnabled: false,
+                  myLocationEnabled: true,
+                  onMapCreated: _onMapCreated,
+                ),
+                Positioned(
+                  left: 15,
+                  right: 15,
+                  bottom: MediaQuery.of(context).size.height * 0.06,
+                  child: BlocListener<TrackingFooterBloc, TrackingFooterState>(
+                    listener: (BuildContext context, state) {
+                      if (state is TrackingFooterCardOpenedState) {
+                        positionStream = Geolocator.getPositionStream()
+                            .listen((Position position) {
+                          googleMapController.animateCamera(
+                            CameraUpdate.newCameraPosition(
+                              CameraPosition(
+                                  target: LatLng(
+                                      position.latitude, position.longitude),
+                                  zoom: 17.5),
+                            ),
+                          );
+                        });
+                      } else if (state is TrackingFooterRowOpenedState) {
+                        positionStream.cancel();
+                      }
+                    },
+                    child: BlocBuilder<TrackingFooterBloc, TrackingFooterState>(
+                      builder: (BuildContext context, state) {
+                        if (state is TrackingFooterCardOpenedState) {
+                          return TrackingFooterCard();
+                        } else {
+                          return Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: null,
+                                    child: Icon(
+                                      Icons.history,
+                                      color: Colors.black,
+                                      size: 25,
+                                    ),
+                                    style: ButtonStyle(
+                                      shape: MaterialStateProperty.all(
+                                          CircleBorder()),
+                                      backgroundColor:
+                                          MaterialStateProperty.all(
+                                              Colors.white),
+                                      padding: MaterialStateProperty.all(
+                                          EdgeInsets.all(15)),
+                                    ),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      _setMapCameraCurrentPosition(
+                                          googleMapController);
+                                    },
+                                    child: Icon(
+                                      Icons.gps_fixed,
+                                      color: Colors.black,
+                                    ),
+                                    style: ButtonStyle(
+                                      shape: MaterialStateProperty.all(
+                                          CircleBorder()),
+                                      backgroundColor:
+                                          MaterialStateProperty.all(
+                                              Colors.white),
+                                      padding: MaterialStateProperty.all(
+                                          EdgeInsets.all(15)),
+                                    ),
+                                  )
+                                ],
+                              ),
+                              SizedBox(height: 20),
+                              TrackingFooterRow(),
+                            ],
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                )
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
 
+  Future<void> _onMapCreated(GoogleMapController controller) async {
+    controller.setMapStyle(_mapStyle);
+    googleMapController = controller;
+
+    _setMapCameraCurrentPosition(googleMapController);
+  }
+
+  _setMapCameraCurrentPosition(GoogleMapController controller) async {
     //Get current geo-position
-    var _currentLocation = await Geolocator.getCurrentPosition(
+    var currentLocation = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
-
-    print(_currentLocation);
 
     //Create new camera position for maps
     final CameraPosition _newCameraPosition = CameraPosition(
-        target: LatLng(_currentLocation.latitude, _currentLocation.longitude),
+        target: LatLng(currentLocation.latitude, currentLocation.longitude),
         zoom: 17.5);
 
     //Set New Camera Position in maps
