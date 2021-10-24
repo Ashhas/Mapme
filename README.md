@@ -11,8 +11,7 @@
  
 
 ## Download
-Because of the *Google Maps API Key*, there could be a cost for me depending on how many users use the app.
-So I'll keep the APK in [Releases] for a limited time.
+Because of the *Google Maps API Key*, it could cost me if there are a lot of users the app. So for the meantime, I'll keep the APK in [Releases] and might remove it after some time.
 
 
 ## Features ✔️
@@ -28,7 +27,7 @@ So I'll keep the APK in [Releases] for a limited time.
 - [geolocator](https://pub.dev/packages/geolocator) - Geolocation plugin for Flutter
 - [google_maps_flutter](https://pub.dev/packages/google_maps_flutter) - Flutter plugin for integrating Google Maps
 - [flutter_polyline_points](https://pub.dev/packages/flutter_polyline_points) - Get polyline points to draw on the map
-- [equatable](https://pub.dev/packages/equatable) vImplement value based equality
+- [equatable](https://pub.dev/packages/equatable) - Implement value based equality
 - [intl](https://pub.dev/packages/intl) - Formatting dates
 - [stop_watch_timer](https://pub.dev/packages/stop_watch_timer) - Package to easily implement a timer
 
