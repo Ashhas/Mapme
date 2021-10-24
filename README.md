@@ -29,7 +29,7 @@ Plugins | Usage
 
 ## How to Build 📱
 
-Note that you will need to make a new project in the **Google Cloud Platform**, and enable the **Google Maps API** for that project. Then you need to copy the API Key and it to the code in multiple locations: 
+Note that you need to make a new project in the **Google Cloud Platform**, and enable the **Google Maps API** for that project. Then you need to copy the API Key and it to the code in multiple locations: 
 
 - Add the key to this file `lib/util/constants.dart`:
   ```dart
