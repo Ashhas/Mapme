@@ -10,6 +10,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:map_me/bloc/tracking_footer/tracking_footer_bloc.dart';
 import 'package:map_me/ui/widgets/tracking_footer_card.dart';
 import 'package:map_me/ui/widgets/tracking_footer_row.dart';
+import 'package:map_me/util/constants.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -247,29 +248,30 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _createPolylines(Position start, Position destination) async {
-    // Initializing PolylinePoints
+    //Initializing PolylinePoints
     PolylinePoints polylinePoints = PolylinePoints();
 
-    // Generating the list of coordinates to be used for
-    // drawing the polylines
+    //Generating the list of coordinates to be used for drawing the polylines
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      "AIzaSyAHD2ayUeD2-20XdXJDs_BhCA-tuc-xle4", // Google Maps API Key
+      Constants.APIKEY,
       PointLatLng(start.latitude, start.longitude),
       PointLatLng(destination.latitude, destination.longitude),
       travelMode: TravelMode.walking,
     );
 
-    // Adding the coordinates to the list
+    //Adding the coordinates to the list
     if (result.points.isNotEmpty) {
       result.points.forEach((PointLatLng point) {
-        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+        polylineCoordinates.add(
+          LatLng(point.latitude, point.longitude),
+        );
       });
     }
 
-    // Defining an ID
+    //Defining an ID
     PolylineId id = PolylineId('poly');
 
-    // Initializing Polyline
+    //Initializing Polyline
     Polyline polyline = Polyline(
       polylineId: id,
       color: Colors.red,
@@ -277,7 +279,7 @@ class _HomeScreenState extends State<HomeScreen> {
       width: 3,
     );
 
-    // Adding the polyline to the map
+    //Adding the polyline to the map
     polylines[id] = polyline;
   }
 }
