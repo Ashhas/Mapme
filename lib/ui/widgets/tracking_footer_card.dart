@@ -2,13 +2,52 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:map_me/bloc/tracking_footer/tracking_footer_bloc.dart';
 import 'package:map_me/ui/widgets/stat_tile.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 class TrackingFooterCard extends StatefulWidget {
+  final double walkingDistance;
+
+  TrackingFooterCard({required this.walkingDistance});
+
   @override
   _TrackingFooterCardState createState() => _TrackingFooterCardState();
 }
 
 class _TrackingFooterCardState extends State<TrackingFooterCard> {
+  late StopWatchTimer _stopWatchTimer;
+  String currentTime = "00:00:00";
+
+  @override
+  void initState() {
+    super.initState();
+    _setupTimer();
+  }
+
+  @override
+  void dispose() async {
+    super.dispose();
+    await _stopWatchTimer.dispose(); // Need to call dispose function.
+  }
+
+  _setupTimer() {
+    _stopWatchTimer = StopWatchTimer(
+      mode: StopWatchMode.countUp,
+      onChange: (value) {
+        final displayTime = StopWatchTimer.getDisplayTime(
+          value,
+          hours: true,
+          minute: true,
+          second: true,
+          milliSecond: false,
+        );
+        setState(() {
+          currentTime = displayTime;
+        });
+      },
+    );
+    _stopWatchTimer.onExecute.add(StopWatchExecute.start);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -60,7 +99,7 @@ class _TrackingFooterCardState extends State<TrackingFooterCard> {
             size: 15,
           ),
           Text(
-            "--:--",
+            currentTime,
             style: TextStyle(
               fontSize: 30,
               fontWeight: FontWeight.w700,
@@ -79,11 +118,11 @@ class _TrackingFooterCardState extends State<TrackingFooterCard> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.max,
         children: [
-          StatTile(),
+          StatTile(title: 'Distance', value: widget.walkingDistance),
           Container(color: Colors.grey, width: 1.0, height: 40.0),
-          StatTile(),
+          StatTile(title: 'Distance', value: widget.walkingDistance),
           Container(color: Colors.grey, width: 1.0, height: 40.0),
-          StatTile(),
+          StatTile(title: 'Distance', value: widget.walkingDistance),
         ],
       ),
     );
