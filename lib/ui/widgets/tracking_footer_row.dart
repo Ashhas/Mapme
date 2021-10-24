@@ -14,12 +14,13 @@ class _TrackingFooterRowState extends State<TrackingFooterRow> {
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30), color: Colors.white),
       height: 55,
-      width: MediaQuery.of(context).size.width * 0.92,
+      width: MediaQuery.of(context).size.width * 0.90,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           IconButton(
+            padding: EdgeInsets.only(left: 15),
             onPressed: () {
               BlocProvider.of<TrackingFooterBloc>(context).add(
                 CloseTrackingFooterCard(),
@@ -33,6 +34,7 @@ class _TrackingFooterRowState extends State<TrackingFooterRow> {
           ),
           Text("Start tracking!"),
           IconButton(
+            padding: EdgeInsets.only(right: 15),
             onPressed: () {
               BlocProvider.of<TrackingFooterBloc>(context).add(
                 OpenTrackingFooterCard(),
@@ -41,7 +43,7 @@ class _TrackingFooterRowState extends State<TrackingFooterRow> {
             icon: Icon(
               Icons.play_circle_fill,
               color: Colors.black,
-              size: 35,
+              size: 40,
             ),
           ),
         ],

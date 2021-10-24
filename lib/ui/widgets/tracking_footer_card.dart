@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:map_me/bloc/tracking_footer/tracking_footer_bloc.dart';
-import 'package:map_me/ui/widgets/stat_tile.dart';
+import 'package:map_me/ui/widgets/stat_tile_distance.dart';
+import 'package:map_me/ui/widgets/stat_tile_speed.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 class TrackingFooterCard extends StatefulWidget {
   final double walkingDistance;
+  final double walkingSpeed;
 
-  TrackingFooterCard({required this.walkingDistance});
+  TrackingFooterCard(
+      {required this.walkingDistance, required this.walkingSpeed});
 
   @override
   _TrackingFooterCardState createState() => _TrackingFooterCardState();
@@ -118,11 +121,11 @@ class _TrackingFooterCardState extends State<TrackingFooterCard> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.max,
         children: [
-          StatTile(title: 'Distance', value: widget.walkingDistance),
+          StatSpeedTile(title: 'Speed', value: widget.walkingSpeed),
           Container(color: Colors.grey, width: 1.0, height: 40.0),
-          StatTile(title: 'Distance', value: widget.walkingDistance),
+          StatDistanceTile(title: 'Distance', value: widget.walkingDistance),
           Container(color: Colors.grey, width: 1.0, height: 40.0),
-          StatTile(title: 'Distance', value: widget.walkingDistance),
+          StatDistanceTile(title: 'Distance', value: widget.walkingDistance),
         ],
       ),
     );

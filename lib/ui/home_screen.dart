@@ -20,6 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String? _mapStyle;
   Set<Marker> markers = {};
   double totalDistance = 0.0;
+  double walkingSpeed = 0.0;
   late GoogleMapController googleMapController;
   late StreamSubscription<Position> positionStream;
   LatLng _initialCameraPosition = LatLng(20.5937, 78.9629);
@@ -115,8 +116,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           //Update state to show line on map
                           //TODO: Implement BloC state to update the lines
                           setState(() {
+                            //Set Current Speed
+                            walkingSpeed = currentPosition.speed;
+
                             //Create Polylines in mapview
                             _createPolylines(prevPosition, currentPosition);
+
+                            //Calculate distance
                             _calculateDistance(prevPosition, currentPosition);
                           });
 
@@ -139,6 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         if (state is TrackingFooterCardOpenedState) {
                           return TrackingFooterCard(
                             walkingDistance: totalDistance,
+                            walkingSpeed: walkingSpeed,
                           );
                         } else {
                           return Column(
