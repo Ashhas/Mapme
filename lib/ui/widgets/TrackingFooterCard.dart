@@ -31,7 +31,7 @@ class _TrackingFooterCardState extends State<TrackingFooterCard> {
   }
 
   Widget _footerCard() {
-    return AnimatedContainer(
+    return Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15), color: Colors.white),
       height: 160,
@@ -44,10 +44,6 @@ class _TrackingFooterCardState extends State<TrackingFooterCard> {
           _statsRow(),
         ],
       ),
-      // Define how long the animation should take.
-      duration: const Duration(seconds: 2),
-      // Provide an optional curve to make the animation feel smoother.
-      curve: Curves.easeIn,
     );
   }
 
