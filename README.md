@@ -43,5 +43,13 @@ Note that you will need to make a new project in the **Google Cloud Platform**, 
   ```
 
 
+## Release
+
+Because of the Google Maps API Key, there could be a cost for me depending on how many users use the app.
+So I'll keep the APK in releases for a limited time: [releases]
+
+
+
 [Map Me]:https://github.com/swaaz/Mapme
 [google_maps_flutter]:https://pub.dev/packages/google_maps_flutter
+[releases]:https://github.com/Ashhas/Mapme/releases
