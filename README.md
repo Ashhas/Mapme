@@ -1,6 +1,6 @@
 # Map Me - Flutterized
 
-:earth_americas: This is project is a Flutterized version of the [Map Me] project. The goal of the project is to practise recreating UI elements and getting familiar with the [google_maps_flutter] package.
+:earth_americas: This is project is a Flutterized version of the [Map Me] project. Track your walking route and see the distance and time. The goal of the project is to practise recreating UI elements and getting familiar with the [google_maps_flutter] package. (No data is saved!)
 
 ## Screenshots
 <p>
@@ -8,6 +8,12 @@
   <img src="https://github.com/Ashhas/Mapme/blob/main/screenshot/Screenshot_20211024-212207.jpg" width="225"> 
   <img src="https://github.com/Ashhas/Mapme/blob/main/screenshot/Screenshot_20211024-212219.jpg" width="225">
  </p>
+
+## Features ✔️
+* Detect the current location of the user
+* Draw the route between start location and current location using Polylines
+* Calculate the actual distance of the route
+* Stopwatch to time the walk
 
 ## Made With 🛠
 Plugins | Usage
