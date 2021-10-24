@@ -1,6 +1,5 @@
 # Map Me - Flutterized
-
-:earth_americas: This is project is a Flutterized version of the [Map Me] project. Track your walking route and see the distance and time. The goal of the project is to practise recreating UI elements and getting familiar with the [google_maps_flutter] package. (No data is saved!)
+:earth_americas: This project is a Flutterized version of the [Map Me] project. Track your walking route and see the distance and time. The goal of the project is to practice recreating UI elements and getting familiar with the [google_maps_flutter] package. (No data gets saved!)
 
 ## Screenshots
 <p>
