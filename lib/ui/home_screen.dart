@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -18,6 +19,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String? _mapStyle;
   Set<Marker> markers = {};
+  double totalDistance = 0.0;
   late GoogleMapController googleMapController;
   late StreamSubscription<Position> positionStream;
   LatLng _initialCameraPosition = LatLng(20.5937, 78.9629);
@@ -115,6 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           setState(() {
                             //Create Polylines in mapview
                             _createPolylines(prevPosition, currentPosition);
+                            _calculateDistance(prevPosition, currentPosition);
                           });
 
                           // Replace prev position with new one
@@ -126,12 +129,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         //Clear lines from map
                         polylines.clear();
+
+                        //Clear Distance
+                        totalDistance = 0.0;
                       }
                     },
                     child: BlocBuilder<TrackingFooterBloc, TrackingFooterState>(
                       builder: (BuildContext context, state) {
                         if (state is TrackingFooterCardOpenedState) {
-                          return TrackingFooterCard();
+                          return TrackingFooterCard(
+                            walkingDistance: totalDistance,
+                          );
                         } else {
                           return Column(
                             children: [
@@ -179,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _currentPositionButton() {
     return ElevatedButton(
       onPressed: () {
-        _setMapCameraCurrentPosition(googleMapController);
+        _setCameraToCurrentPosition(googleMapController);
       },
       child: Icon(
         Icons.gps_fixed,
@@ -197,7 +205,7 @@ class _HomeScreenState extends State<HomeScreen> {
     controller.setMapStyle(_mapStyle);
     googleMapController = controller;
 
-    _setMapCameraCurrentPosition(googleMapController);
+    _setCameraToCurrentPosition(googleMapController);
   }
 
   Future<Position> _getCurrentPosition() {
@@ -205,18 +213,30 @@ class _HomeScreenState extends State<HomeScreen> {
         desiredAccuracy: LocationAccuracy.high);
   }
 
-  _setMapCameraCurrentPosition(GoogleMapController controller) async {
+  _setCameraToCurrentPosition(GoogleMapController controller) async {
     //Get current geo-position
-    Position currentLocation = await _getCurrentPosition();
+    Position currentPosition = await _getCurrentPosition();
 
     //Create new camera position for maps
     final CameraPosition _newCameraPosition = CameraPosition(
-        target: LatLng(currentLocation.latitude, currentLocation.longitude),
+        target: LatLng(currentPosition.latitude, currentPosition.longitude),
         zoom: 17.5);
 
     //Set New Camera Position in maps
     controller
         .animateCamera(CameraUpdate.newCameraPosition(_newCameraPosition));
+  }
+
+  _calculateDistance(Position firstPosition, Position nextPosition) {
+    var p = 0.017453292519943295;
+    var c = cos;
+    var a = 0.5 -
+        c((nextPosition.latitude - firstPosition.latitude) * p) / 2 +
+        c(firstPosition.latitude * p) *
+            c(nextPosition.latitude * p) *
+            (1 - c((nextPosition.longitude - firstPosition.longitude) * p)) /
+            2;
+    totalDistance += 12742 * asin(sqrt(a));
   }
 
   _createPolylines(Position start, Position destination) async {
@@ -252,10 +272,5 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // Adding the polyline to the map
     polylines[id] = polyline;
-    polylines.forEach((key, value) {
-      value.points.forEach((element) {
-        print("points -- ${element.longitude} & ${element.latitude}");
-      });
-    });
   }
 }
