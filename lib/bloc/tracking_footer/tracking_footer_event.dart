@@ -16,10 +16,6 @@ class OpenTrackingFooterCard extends TrackingFooterEvent {
 }
 
 class ResetToCurrentLocation extends TrackingFooterEvent {
-  final GoogleMapController? googleMapController;
-
-  ResetToCurrentLocation({this.googleMapController});
-
   @override
   List<Object> get props => [];
 }

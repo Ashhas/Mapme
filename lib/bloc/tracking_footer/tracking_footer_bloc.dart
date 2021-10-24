@@ -20,7 +20,7 @@ class TrackingFooterBloc
     if (event is HomeOpened) {
       yield* _mapHomeOpened();
     } else if (event is ResetToCurrentLocation) {
-      yield* _mapResetToCurrentLocation(event.googleMapController);
+      yield* _mapResetToCurrentLocation();
     } else if (event is OpenTrackingFooterCard) {
       yield* _mapOpenTrackingFooterCard();
     } else if (event is CloseTrackingFooterCard) {
@@ -32,23 +32,7 @@ class TrackingFooterBloc
     yield HomeOpenedState();
   }
 
-  Stream<TrackingFooterState> _mapResetToCurrentLocation(
-      GoogleMapController? mapController) async* {
-    print("Reset");
-
-    //Get current geo-position
-    var _currentLocation = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-
-    //Create new camera position for maps
-    final CameraPosition _newCameraPosition = CameraPosition(
-        target: LatLng(_currentLocation.latitude, _currentLocation.longitude),
-        zoom: 17.5);
-
-    //Set New Camera Position in maps
-    mapController!
-        .animateCamera(CameraUpdate.newCameraPosition(_newCameraPosition));
-  }
+  Stream<TrackingFooterState> _mapResetToCurrentLocation() async* {}
 
   Stream<TrackingFooterState> _mapOpenTrackingFooterCard() async* {
     yield TrackingFooterCardOpenedState();

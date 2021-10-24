@@ -78,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Positioned(
                   left: 15,
                   right: 15,
-                  bottom: MediaQuery.of(context).size.height * 0.06,
+                  bottom: MediaQuery.of(context).size.height * 0.055,
                   child: BlocListener<TrackingFooterBloc, TrackingFooterState>(
                     listener: (BuildContext context, state) {
                       if (state is TrackingFooterCardOpenedState) {
