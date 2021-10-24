@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:map_me/bloc/tracking_footer/tracking_footer_bloc.dart';
-import 'package:map_me/ui/widgets/StatTile.dart';
+import 'package:map_me/ui/widgets/stat_tile.dart';
 
 class TrackingFooterCard extends StatefulWidget {
   @override

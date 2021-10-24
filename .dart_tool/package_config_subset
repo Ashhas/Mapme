@@ -50,6 +50,10 @@ flutter_plugin_android_lifecycle
 2.12
 file:///D:/SDKs/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_plugin_android_lifecycle-2.0.4/
 file:///D:/SDKs/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_plugin_android_lifecycle-2.0.4/lib/
+flutter_polyline_points
+2.12
+file:///D:/SDKs/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_polyline_points-1.0.0/
+file:///D:/SDKs/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_polyline_points-1.0.0/lib/
 geolocator
 2.12
 file:///D:/SDKs/flutter/.pub-cache/hosted/pub.dartlang.org/geolocator-7.7.1/
@@ -78,6 +82,14 @@ google_maps_flutter_platform_interface
 2.12
 file:///D:/SDKs/flutter/.pub-cache/hosted/pub.dartlang.org/google_maps_flutter_platform_interface-2.1.3/
 file:///D:/SDKs/flutter/.pub-cache/hosted/pub.dartlang.org/google_maps_flutter_platform_interface-2.1.3/lib/
+http
+2.14
+file:///D:/SDKs/flutter/.pub-cache/hosted/pub.dartlang.org/http-0.13.4/
+file:///D:/SDKs/flutter/.pub-cache/hosted/pub.dartlang.org/http-0.13.4/lib/
+http_parser
+2.12
+file:///D:/SDKs/flutter/.pub-cache/hosted/pub.dartlang.org/http_parser-4.0.0/
+file:///D:/SDKs/flutter/.pub-cache/hosted/pub.dartlang.org/http_parser-4.0.0/lib/
 intl
 2.12
 file:///D:/SDKs/flutter/.pub-cache/hosted/pub.dartlang.org/intl-0.17.0/
