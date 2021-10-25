@@ -1,5 +1,5 @@
 # Map Me - Flutterized
-:earth_americas: This project is a Flutterized version of the [Map Me] project. Tracks your location and see details of the route: speed, elapsed time and distance covered. The goal of the project is to practice recreating UI elements and getting familiar with the [google_maps_flutter] package. (No data gets saved!)
+:earth_americas: This project is a Flutterized version of the [Map Me] project. Tracks your location and see details of the route: speed, elapsed time and distance covered. The goal of the project is to practice recreating the UI elements of [this] image and getting familiar with the [google_maps_flutter] package. (No data gets saved!)
 
 
 ## Screenshots
@@ -56,3 +56,4 @@ Note that you need to make a new project in the **Google Cloud Platform**, and e
 [Map Me]:https://github.com/swaaz/Mapme
 [google_maps_flutter]:https://pub.dev/packages/google_maps_flutter
 [Releases]:https://github.com/Ashhas/Mapme/releases
+[this]:https://github.com/swaaz/Mapme/blob/main/readme/mockup.png
