@@ -1,16 +1,16 @@
 import 'dart:async';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:map_me/bloc/tracking_footer/tracking_footer_bloc.dart';
 import 'package:map_me/ui/widgets/tracking_footer_card.dart';
 import 'package:map_me/ui/widgets/tracking_footer_row.dart';
 import 'package:map_me/util/constants.dart';
+import 'package:map_me/util/distance_calculator.dart';
+import 'package:map_me/util/polyline_builder.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -18,19 +18,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String? _mapStyle;
-  Set<Marker> markers = {};
+  PolylineId id = PolylineId('poly');
+  String? mapStyle;
   double totalDistance = 0.0;
   double walkingSpeed = 0.0;
+  Map<PolylineId, Polyline> polylines = {};
   late GoogleMapController googleMapController;
   late StreamSubscription<Position> positionStream;
-  LatLng _initialCameraPosition = LatLng(20.5937, 78.9629);
-
-  // List of coordinates to join
-  List<LatLng> polylineCoordinates = [];
-
-  // Map storing polylines created by connecting two points
-  Map<PolylineId, Polyline> polylines = {};
 
   @override
   void initState() {
@@ -42,9 +36,28 @@ class _HomeScreenState extends State<HomeScreen> {
   _getMapStyle() {
     SchedulerBinding.instance?.addPostFrameCallback((_) {
       rootBundle.loadString("assets/style/map_style.txt").then((string) {
-        _mapStyle = string;
+        mapStyle = string;
       });
     });
+  }
+
+  _setCurrentCameraPosition(GoogleMapController mapsController) async {
+    Position currentPosition = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+
+    _moveCameraPosition(mapsController, currentPosition);
+  }
+
+  _moveCameraPosition(
+      GoogleMapController mapsController, Position gpsLocation) {
+    //Create new camera position for maps
+    final CameraPosition _newCameraPosition = CameraPosition(
+        target: LatLng(gpsLocation.latitude, gpsLocation.longitude),
+        zoom: 17.5);
+
+    //Set New Camera Position in maps
+    mapsController
+        .animateCamera(CameraUpdate.newCameraPosition(_newCameraPosition));
   }
 
   _checkPermissionAndService() async {
@@ -81,12 +94,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 GoogleMap(
                   polylines: Set<Polyline>.of(polylines.values),
                   mapType: MapType.normal,
-                  initialCameraPosition:
-                      CameraPosition(target: _initialCameraPosition),
+                  initialCameraPosition: CameraPosition(
+                      target: Constants.INITIAL_CAMERA_COORDINATES),
                   zoomControlsEnabled: false,
                   myLocationButtonEnabled: false,
                   myLocationEnabled: true,
-                  onMapCreated: _onMapCreated,
+                  onMapCreated: (GoogleMapController internalController) {
+                    internalController.setMapStyle(mapStyle);
+                    googleMapController = internalController;
+
+                    _setCurrentCameraPosition(googleMapController);
+                  },
                 ),
                 Positioned(
                   left: 15,
@@ -95,37 +113,36 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: BlocListener<TrackingFooterBloc, TrackingFooterState>(
                     listener: (BuildContext context, state) async {
                       if (state is TrackingFooterCardOpenedState) {
-                        Position prevPosition = await _getCurrentPosition();
+                        Position prevPosition =
+                            await Geolocator.getCurrentPosition(
+                                desiredAccuracy: LocationAccuracy.high);
                         Position currentPosition;
 
                         //Subscribe to position stream
                         positionStream = Geolocator.getPositionStream()
-                            .listen((Position position) {
+                            .listen((Position streamPosition) async {
                           //Update Current Position
-                          currentPosition = position;
+                          currentPosition = streamPosition;
 
-                          //Set Camera in mapview
-                          googleMapController.animateCamera(
-                            CameraUpdate.newCameraPosition(
-                              CameraPosition(
-                                  target: LatLng(
-                                      position.latitude, position.longitude),
-                                  zoom: 17.5),
-                            ),
-                          );
+                          //Move Camera in mapview
+                          _moveCameraPosition(
+                              googleMapController, streamPosition);
 
                           //Update state to show line on map
                           //TODO: Implement BloC state to update the lines
-                          setState(() {
-                            //Set Current Speed
-                            walkingSpeed = currentPosition.speed;
 
-                            //Create Polylines in mapview
-                            _createPolylines(prevPosition, currentPosition);
+                          //Set Current Speed
+                          walkingSpeed = currentPosition.speed;
 
-                            //Calculate distance
-                            _calculateDistance(prevPosition, currentPosition);
-                          });
+                          //Create Polylines in mapview
+                          polylines[id] = await PolylineBuilder.createPolyline(
+                              id, prevPosition, currentPosition);
+
+                          //Calculate distance
+                          totalDistance = DistanceCalculator.calculate(
+                              prevPosition, currentPosition, totalDistance);
+
+                          setState(() {});
 
                           // Replace prev position with new one
                           prevPosition = currentPosition;
@@ -139,6 +156,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         //Clear Distance
                         totalDistance = 0.0;
+
+                        setState(() {});
                       }
                     },
                     child: BlocBuilder<TrackingFooterBloc, TrackingFooterState>(
@@ -151,14 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         } else {
                           return Column(
                             children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  _historyButton(),
-                                  _currentPositionButton(),
-                                ],
-                              ),
+                              _buttonRow(),
                               SizedBox(height: 20),
                               TrackingFooterRow(),
                             ],
@@ -173,6 +185,16 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         ),
       ),
+    );
+  }
+
+  Widget _buttonRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _historyButton(),
+        _currentPositionButton(),
+      ],
     );
   }
 
@@ -195,7 +217,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _currentPositionButton() {
     return ElevatedButton(
       onPressed: () {
-        _setCameraToCurrentPosition(googleMapController);
+        _setCurrentCameraPosition(googleMapController);
       },
       child: Icon(
         Icons.gps_fixed,
@@ -207,79 +229,5 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: MaterialStateProperty.all(EdgeInsets.all(15)),
       ),
     );
-  }
-
-  Future<void> _onMapCreated(GoogleMapController controller) async {
-    controller.setMapStyle(_mapStyle);
-    googleMapController = controller;
-
-    _setCameraToCurrentPosition(googleMapController);
-  }
-
-  Future<Position> _getCurrentPosition() {
-    return Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-  }
-
-  _setCameraToCurrentPosition(GoogleMapController controller) async {
-    //Get current geo-position
-    Position currentPosition = await _getCurrentPosition();
-
-    //Create new camera position for maps
-    final CameraPosition _newCameraPosition = CameraPosition(
-        target: LatLng(currentPosition.latitude, currentPosition.longitude),
-        zoom: 17.5);
-
-    //Set New Camera Position in maps
-    controller
-        .animateCamera(CameraUpdate.newCameraPosition(_newCameraPosition));
-  }
-
-  _calculateDistance(Position firstPosition, Position nextPosition) {
-    var p = 0.017453292519943295;
-    var c = cos;
-    var a = 0.5 -
-        c((nextPosition.latitude - firstPosition.latitude) * p) / 2 +
-        c(firstPosition.latitude * p) *
-            c(nextPosition.latitude * p) *
-            (1 - c((nextPosition.longitude - firstPosition.longitude) * p)) /
-            2;
-    totalDistance += 12742 * asin(sqrt(a));
-  }
-
-  _createPolylines(Position start, Position destination) async {
-    //Initializing PolylinePoints
-    PolylinePoints polylinePoints = PolylinePoints();
-
-    //Generating the list of coordinates to be used for drawing the polylines
-    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      Constants.APIKEY,
-      PointLatLng(start.latitude, start.longitude),
-      PointLatLng(destination.latitude, destination.longitude),
-      travelMode: TravelMode.walking,
-    );
-
-    //Adding the coordinates to the list
-    if (result.points.isNotEmpty) {
-      result.points.forEach((PointLatLng point) {
-        polylineCoordinates.add(
-          LatLng(point.latitude, point.longitude),
-        );
-      });
-    }
-
-    //Defining an ID
-    PolylineId id = PolylineId('poly');
-
-    //Initializing Polyline
-    Polyline polyline = Polyline(
-      polylineId: id,
-      color: Colors.red,
-      points: polylineCoordinates,
-      width: 3,
-    );
-
-    //Adding the polyline to the map
-    polylines[id] = polyline;
   }
 }
