@@ -15,22 +15,12 @@ class TrackingFooterBloc
   @override
   Stream<TrackingFooterState> mapEventToState(
       TrackingFooterEvent event) async* {
-    if (event is HomeOpened) {
-      yield* _mapHomeOpened();
-    } else if (event is ResetToCurrentLocation) {
-      yield* _mapResetToCurrentLocation();
-    } else if (event is OpenTrackingFooterCard) {
+    if (event is OpenTrackingFooterCard) {
       yield* _mapOpenTrackingFooterCard();
     } else if (event is CloseTrackingFooterCard) {
       yield* _mapCloseTrackingFooterCard();
     }
   }
-
-  Stream<TrackingFooterState> _mapHomeOpened() async* {
-    yield HomeOpenedState();
-  }
-
-  Stream<TrackingFooterState> _mapResetToCurrentLocation() async* {}
 
   Stream<TrackingFooterState> _mapOpenTrackingFooterCard() async* {
     yield TrackingFooterCardOpenedState();

@@ -10,11 +10,6 @@ class TrackingFooterInitState extends TrackingFooterState {
   List<Object> get props => [];
 }
 
-class HomeOpenedState extends TrackingFooterState {
-  @override
-  List<Object> get props => [];
-}
-
 class TrackingFooterRowOpenedState extends TrackingFooterState {
   @override
   List<Object> get props => [];
