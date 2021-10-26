@@ -6,11 +6,10 @@ import 'package:map_me/bloc/tracking_footer/tracking_footer_bloc.dart';
 import 'package:map_me/ui/home_screen.dart';
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-
   //Initialize Bloc Observer
   Bloc.observer = SimpleBlocObserver();
 
+  //Lock Device Orientation in portrait mode
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {
     runApp(MyApp());
@@ -28,9 +27,6 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'MapMe',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
         home: HomeScreen(),
       ),
     );

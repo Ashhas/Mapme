@@ -128,9 +128,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           _moveCameraPosition(
                               googleMapController, streamPosition);
 
-                          //Update state to show line on map
-                          //TODO: Implement BloC state to update the lines
-
                           //Set Current Speed
                           walkingSpeed = currentPosition.speed;
 
@@ -200,7 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _historyButton() {
     return ElevatedButton(
-      onPressed: null,
+      onPressed: () {},
       child: Icon(
         Icons.history,
         color: Colors.black,
