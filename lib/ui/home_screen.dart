@@ -10,6 +10,7 @@ import 'package:map_me/ui/widgets/tracking_footer_card.dart';
 import 'package:map_me/ui/widgets/tracking_footer_row.dart';
 import 'package:map_me/util/constants.dart';
 import 'package:map_me/util/distance_calculator.dart';
+import 'package:map_me/util/polyline_builder.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -20,6 +21,8 @@ class _HomeScreenState extends State<HomeScreen> {
   String? mapStyle;
   double totalDistance = 0.0;
   double walkingSpeed = 0.0;
+  Map<PolylineId, Polyline> polylines = {};
+  PolylineBuilder polylineBuilder = PolylineBuilder();
   late GoogleMapController googleMapController;
   late StreamSubscription<Position> positionStream;
 
@@ -89,6 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
             return Stack(
               children: [
                 GoogleMap(
+                  polylines: Set<Polyline>.of(polylines.values),
                   mapType: MapType.normal,
                   initialCameraPosition: CameraPosition(
                       target: Constants.INITIAL_CAMERA_COORDINATES),
@@ -117,30 +121,40 @@ class _HomeScreenState extends State<HomeScreen> {
                         //Subscribe to position stream
                         positionStream = Geolocator.getPositionStream()
                             .listen((Position streamPosition) async {
-                          //Update Current Position
+                          //Update current position
                           currentPosition = streamPosition;
 
-                          //Move Camera in mapview
+                          //Move camera in mapview to the current position
                           _moveCameraPosition(
-                              googleMapController, streamPosition);
+                              googleMapController, currentPosition);
 
-                          //Set Current Speed
+                          //Set current speed
                           walkingSpeed = currentPosition.speed;
 
-                          //Calculate distance
+                          //Add poly from mapview
+                          polylines = await polylineBuilder.createPolyline(
+                              prevPosition, currentPosition);
+
+                          //Calculate total distance
                           totalDistance = DistanceCalculator.calculate(
                               prevPosition, currentPosition, totalDistance);
 
                           setState(() {});
 
-                          // Replace prev position with new one
+                          //Create new prev position
                           prevPosition = currentPosition;
                         });
                       } else if (state is TrackingFooterRowOpenedState) {
                         //Unsubscribe to position stream
                         positionStream.cancel();
 
-                        //Clear Distance
+                        //Clear lines from map
+                        polylines.clear();
+
+                        //Clear coordinates in PolylineBuilder
+                        polylineBuilder.clear();
+
+                        //Reset Distance
                         totalDistance = 0.0;
 
                         setState(() {});
