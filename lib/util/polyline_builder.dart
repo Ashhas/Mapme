@@ -5,12 +5,18 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:map_me/util/constants.dart';
 
 class PolylineBuilder {
-  static Future<Polyline> createPolyline(
-      PolylineId id, Position start, Position destination) async {
-    // List of coordinates to join
-    List<LatLng> polylineCoordinates = [];
+  // Id polyline
+  PolylineId id = PolylineId('poly');
 
-    //Generating the list of coordinates to be used for drawing the polylines
+  // List of coordinates to join
+  List<LatLng> polylineCoordinates = [];
+
+  // Holds polyline
+  Map<PolylineId, Polyline> polylines = {};
+
+  Future<Map<PolylineId, Polyline>> createPolyline(
+      Position start, Position destination) async {
+    // Generating the list of coordinates to be used for drawing the polylines
     PolylineResult result = await PolylinePoints().getRouteBetweenCoordinates(
       Constants.APIKEY,
       PointLatLng(start.latitude, start.longitude),
@@ -18,7 +24,7 @@ class PolylineBuilder {
       travelMode: TravelMode.walking,
     );
 
-    //Adding the coordinates to the list
+    // Adding the coordinates to the list
     if (result.points.isNotEmpty) {
       result.points.forEach((PointLatLng point) {
         polylineCoordinates.add(
@@ -27,7 +33,7 @@ class PolylineBuilder {
       });
     }
 
-    //Initializing Polyline
+    // Initializing Polyline
     Polyline polyline = Polyline(
       polylineId: id,
       color: Colors.red,
@@ -35,6 +41,13 @@ class PolylineBuilder {
       width: 3,
     );
 
-    return polyline;
+    //Put polyline in map
+    polylines[id] = polyline;
+
+    return polylines;
+  }
+
+  void clear() {
+    polylineCoordinates.clear();
   }
 }
