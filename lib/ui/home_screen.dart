@@ -10,7 +10,6 @@ import 'package:map_me/ui/widgets/tracking_footer_card.dart';
 import 'package:map_me/ui/widgets/tracking_footer_row.dart';
 import 'package:map_me/util/constants.dart';
 import 'package:map_me/util/distance_calculator.dart';
-import 'package:map_me/util/polyline_builder.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -18,11 +17,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  PolylineId id = PolylineId('poly');
   String? mapStyle;
   double totalDistance = 0.0;
   double walkingSpeed = 0.0;
-  Map<PolylineId, Polyline> polylines = {};
   late GoogleMapController googleMapController;
   late StreamSubscription<Position> positionStream;
 
@@ -92,7 +89,6 @@ class _HomeScreenState extends State<HomeScreen> {
             return Stack(
               children: [
                 GoogleMap(
-                  polylines: Set<Polyline>.of(polylines.values),
                   mapType: MapType.normal,
                   initialCameraPosition: CameraPosition(
                       target: Constants.INITIAL_CAMERA_COORDINATES),
@@ -131,10 +127,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           //Set Current Speed
                           walkingSpeed = currentPosition.speed;
 
-                          //Create Polylines in mapview
-                          polylines[id] = await PolylineBuilder.createPolyline(
-                              id, prevPosition, currentPosition);
-
                           //Calculate distance
                           totalDistance = DistanceCalculator.calculate(
                               prevPosition, currentPosition, totalDistance);
@@ -147,9 +139,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       } else if (state is TrackingFooterRowOpenedState) {
                         //Unsubscribe to position stream
                         positionStream.cancel();
-
-                        //Clear lines from map
-                        polylines.clear();
 
                         //Clear Distance
                         totalDistance = 0.0;
