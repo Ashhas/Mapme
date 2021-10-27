@@ -4,9 +4,9 @@
 
 ## Screenshots
 <p>
-  <img src="https://github.com/Ashhas/Mapme/blob/main/screenshot/mapme.gif" width="225">
-  <img src="https://github.com/Ashhas/Mapme/blob/main/screenshot/Screenshot_20211024-212207.jpg" width="225"> 
-  <img src="https://github.com/Ashhas/Mapme/blob/main/screenshot/Screenshot_20211024-212219.jpg" width="225">
+  <img src="https://github.com/Ashhas/Mapme/blob/master/screenshot/mapme.gif" width="225">
+  <img src="https://github.com/Ashhas/Mapme/blob/master/screenshot/Screenshot_20211024-212207.jpg" width="225"> 
+  <img src="https://github.com/Ashhas/Mapme/blob/master/screenshot/Screenshot_20211024-212219.jpg" width="225">
  </p>
  
 
