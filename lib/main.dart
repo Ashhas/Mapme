@@ -6,6 +6,9 @@ import 'package:map_me/bloc/tracking_footer/tracking_footer_bloc.dart';
 import 'package:map_me/ui/home_screen.dart';
 
 void main() {
+  //Prepare WidgetBinding for platform channels
+  WidgetsFlutterBinding.ensureInitialized();
+
   //Initialize Bloc Observer
   Bloc.observer = SimpleBlocObserver();
 
