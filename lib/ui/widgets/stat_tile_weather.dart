@@ -24,7 +24,7 @@ class _StatDistanceTileState extends State<StatWeatherTile> {
         ),
         const SizedBox(height: 2.0),
         Text(
-          "--",
+          "---",
           style: TextStyle(
             fontSize: 20,
             color: Colors.black,
