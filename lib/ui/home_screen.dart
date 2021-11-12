@@ -162,20 +162,21 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                     child: BlocBuilder<TrackingFooterBloc, TrackingFooterState>(
                       builder: (BuildContext context, state) {
-                        if (state is TrackingFooterCardOpenedState) {
-                          return TrackingFooterCard(
-                            walkingDistance: totalDistance,
-                            walkingSpeed: walkingSpeed,
-                          );
-                        } else {
-                          return Column(
-                            children: [
-                              _buttonRow(),
-                              SizedBox(height: 20),
-                              TrackingFooterRow(),
-                            ],
-                          );
-                        }
+                        return AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 150),
+                          child: state is TrackingFooterCardOpenedState
+                              ? TrackingFooterCard(
+                                  walkingDistance: totalDistance,
+                                  walkingSpeed: walkingSpeed,
+                                )
+                              : Column(
+                                  children: [
+                                    _buttonRow(),
+                                    SizedBox(height: 20),
+                                    TrackingFooterRow(),
+                                  ],
+                                ),
+                        );
                       },
                     ),
                   ),

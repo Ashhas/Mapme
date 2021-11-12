@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:map_me/bloc/tracking_footer/tracking_footer_bloc.dart';
 import 'package:map_me/ui/widgets/stat_tile_distance.dart';
 import 'package:map_me/ui/widgets/stat_tile_speed.dart';
+import 'package:map_me/ui/widgets/stat_tile_weather.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 class TrackingFooterCard extends StatefulWidget {
@@ -29,7 +30,7 @@ class _TrackingFooterCardState extends State<TrackingFooterCard> {
   @override
   void dispose() async {
     super.dispose();
-    await _stopWatchTimer.dispose(); // Need to call dispose function.
+    await _stopWatchTimer.dispose();
   }
 
   _setupTimer() {
@@ -125,7 +126,7 @@ class _TrackingFooterCardState extends State<TrackingFooterCard> {
           Container(color: Colors.grey, width: 1.0, height: 40.0),
           StatDistanceTile(title: 'Distance', value: widget.walkingDistance),
           Container(color: Colors.grey, width: 1.0, height: 40.0),
-          StatDistanceTile(title: 'Distance', value: widget.walkingDistance),
+          StatWeatherTile(title: 'Weather'),
         ],
       ),
     );
