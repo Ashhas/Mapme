@@ -35,6 +35,8 @@ Because of the *Google Maps API Key*, it could cost me if there are a lot of use
 ## Comments
 The architecture can be improved. Since it's only possible to get the `dart GoogleMapsController` from the widget itself, I wasn't able to keep all logic-code inside the BLoC. I need to research a better solution to separate the UI and business logic. However the ultimate goal of practising with the UI elements and the google_maps_flutter package has been achieved! 😎
 
+Also, this app works on both Android & IOS. However, the IOS version hasn't been fully tested for functionality.
+
 
 ## How to Build 📱
 Note that you need to make a new project in the **Google Cloud Platform**, and enable the **Google Maps API** for that project. Then you need to copy the API Key and add it to the code in multiple locations: 
@@ -50,6 +52,10 @@ Note that you need to make a new project in the **Google Cloud Platform**, and e
                android:value="YOUR KEY HERE"/>
   ```
 
+- Lastly, go to the file `Runner/AppDelegate.swift` and add your API key there as well:
+  ```swift
+    GMSServices.provideAPIKey("<-- YOUR API KEY -->")
+  ```
 
 
 
