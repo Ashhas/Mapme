@@ -2,7 +2,7 @@
 :earth_americas: This project is a Flutterized version of the [Map Me] project. Tracks your location and see details of the route: speed, elapsed time and distance covered. The goal of the project is to practice recreating the UI elements of [this] image and getting familiar with the [google_maps_flutter] package. (No data gets saved!)
 
 
-## Screenshots (w/ fake location ofcourse)
+## Screenshots (with a fake location ofcourse)
 <p>
   <img src="https://github.com/Ashhas/Mapme/blob/master/screenshot/mapme.gif" width="225">
   <img src="https://github.com/Ashhas/Mapme/blob/master/screenshot/Screenshot_20211024-212207.jpg" width="225"> 
